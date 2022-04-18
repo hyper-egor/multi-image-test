@@ -1,0 +1,32 @@
+plugins {
+    // plugins listed here are available for all sub-modules
+
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'idea'
+}
+
+subprojects {
+    // everything in this block apply's to all sub-modules
+
+    group = 'com.bnpp.examples'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '11'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'java-library'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        imports {
+            // Version of artifact from here is used in ALL SUB-MODULES! don't set version in sub-module build.gradle
+            // version from here'll populate to all sub-modules.
+            mavenBom("org.springframework.boot:spring-boot-dependencies:2.6.6")
+        }
+    }
+}

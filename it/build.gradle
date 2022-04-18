@@ -1,0 +1,8 @@
+dependencies {
+    // below declares that this 'module'a' depends on 'configuration' module
+    implementation project(':configuration')
+
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.testcontainers:testcontainers:1.17.1'
+    implementation 'org.testcontainers:junit-jupiter:1.17.1'
+}

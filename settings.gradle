@@ -1,0 +1,6 @@
+rootProject.name = 'multi-image-test'
+
+include 'configuration'
+include 'module-a'
+include 'module-b'
+include 'it'
