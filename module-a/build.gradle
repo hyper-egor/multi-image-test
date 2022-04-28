@@ -15,22 +15,40 @@ docker {
     buildArgs([JAR_FILE: "${bootJar.archiveName}"])
 }
 
-// also 'gradle dockerStop' task is available!
+// also 'gradle dockerStop' task is available
 dockerRun {
     name "${project.name}"
     image "${project.name}:${project.version}"
     // port <port available outside> : <port of app in the container>
-    ports '81:8080'
+    ports '81:8081'
     // 'true' to remove container after stop
     clean true
 }
 
+
+ext {
+    // Define here the vars to use globally in placeholders of this script
+    dockerless_environment_host = 'localhost'
+}
+
+test {
+    jvmArgs = [
+            "-Dconfig_server_host=${dockerless_environment_host}",  // config server host to work without Docker (build, junit tests etc.)
+            "-Dsolace_host=${dockerless_environment_host}"          // SOLACE host to work without Docker (build, junit tests etc.)
+    ]
+}
+
 dependencies {
     // below declares that this 'module'a' depends on 'configuration' module
-    implementation project(':configuration')
+    implementation project(':common')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation group: 'com.solace.spring.boot', name: 'solace-jms-spring-boot-starter', version: '4.2.2'
+
+    // enable Spring cloud config as config source
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '3.1.1'
 }
 
 tasks.named('test') {

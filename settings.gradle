@@ -1,6 +1,7 @@
 rootProject.name = 'multi-image-test'
 
-include 'configuration'
+include 'common'
+include 'config-server'
 include 'module-a'
 include 'module-b'
 include 'it'

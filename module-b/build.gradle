@@ -1,4 +1,4 @@
 dependencies {
-    // below declares that this 'module'a' depends on 'configuration' module
-    implementation project(':configuration')
+    // below declares that this 'module'b' depends on 'configuration' module
+    implementation project(':common')
 }
