@@ -2,7 +2,6 @@ package com.bnpp.examples.sboot.it;
 
 import com.bnpp.examples.sboot.HTTPController;
 import com.bnpp.examples.sboot.utils.DockerUtils;
-import org.apache.commons.codec.binary.Base64;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -44,6 +42,9 @@ public class AllContainersE2ETests {
     @Value("${solace.queueName}")
     public String SOLACE_QUEUE_NAME;
 
+    @Value("${solace.httpApi.port}")
+    public int SOLACE_HTTP_PORT_INSIDE_DOCKER;
+
     public static final String SOLACE_IMAGE = "solace/solace-pubsub-standard";
     public static final String SOLACE_HTTP_USER = "admin";
     public static final String SOLACE_HTTP_PASS = "admin";
@@ -51,10 +52,9 @@ public class AllContainersE2ETests {
     /*  Docker container's name ('host' in docker network)
         TODO: move this magic key to config..
      */
-    public static final String CONFIG_SERVER_DOCKER_HOST = "config-server";
+    public static final String CONFIG_SERVER_DOCKER_HOST = "conf-server";
     public static String configServerHostIP;
 
-    public static final int SOLACE_HTTP_PORT_INSIDE_DOCKER = 8080;
     public static final String SOLACE_DOCKER_HOST = "solace";
     public static String solaceHostIP;
 
@@ -97,22 +97,23 @@ public class AllContainersE2ETests {
             log.info("============= Solace started with ip: " + solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress());
         } catch (Exception e) {
             log.info("============= Failed to start Solace");
+            log.info("============= S1 " + solaceContainer.getLogs());
             throw e;
         } finally {
             // Check logs is useful to find key log string signaling that Solace started OK (for waitingFor(..) construction)
-            // log.info("============= S1 " + solaceContainer.getLogs());
+            log.info("============= S1 " + solaceContainer.getLogs());
         }
 
         // Create queue (example URL: http://localhost:8080/SEMP/v2/config/msgVpns/default/queues)
         String url = "http://"
                 + solaceContainer.getHost()
-                + ":" + solaceContainer.getMappedPort(SOLACE_HTTP_PORT_INSIDE_DOCKER)
+                + ":" + solaceContainer.getMappedPort(SOLACE_HTTP_PORT_INSIDE_DOCKER)   // get 'outside' port mapped to port inside docker
                 + "/SEMP/v2/config/msgVpns/" + SOLACE_VPN_NAME + "/queues";
         String request = "{\"queueName\":\"" + SOLACE_QUEUE_NAME + "\",\"accessType\":\"non-exclusive\",\"egressEnabled\":true,\"ingressEnabled\":true,\"permission\":\"consume\"}";
         log.info("Constructed Solace create queue HTTP POST URL: " + url);
         log.info("Body: " + request);
         // TODO: find better way to correctly diagnose full Solace startup for not to wait 20 sec here
-        Thread.sleep(20_000L);
+        Thread.sleep(20_000L); // TODO: if exist 'healthCkecks'
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -129,8 +130,13 @@ public class AllContainersE2ETests {
     public void testCrossModuleTransmition() throws Exception {
         log.info("====== Module-A server port: " + moduleAServerPort);
 
-        GenericContainer solaceContainer = runSolaceContainer();
+        if (solaceHostIP == null) {
+            // Solace container is not up yet.
+            GenericContainer solaceContainer = runSolaceContainer();
+            solaceHostIP = solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress();
+        }
 
+        // TODO: below Dockerfile path resolving works only for tests run via IDE's 'play'. Fix for console's 'build's
         Path parentProjectPath = Path.of("").toAbsolutePath();
         Path moduleADockerfilePath = parentProjectPath.resolve("module-a").resolve("Dockerfile");
 
@@ -142,7 +148,7 @@ public class AllContainersE2ETests {
                 .withDockerfile(moduleADockerfilePath))
                 .withExposedPorts(moduleAServerPort)
                 .withExtraHost(CONFIG_SERVER_DOCKER_HOST, configServerHostIP)
-                .withExtraHost(SOLACE_DOCKER_HOST, solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress())
+                .withExtraHost(SOLACE_DOCKER_HOST, solaceHostIP)
                 .waitingFor(Wait.forListeningPort());   // tell's Testcontainers to wait with tests before the container starts to reply with excpected strategy
 
         log.info("============= 1 " + moduleAContainer.getLogs());

@@ -22,6 +22,18 @@ subprojects {
         mavenCentral()
     }
 
+    ext {
+        // Define here the vars to use globally in placeholders of this script
+        dockerless_environment_host = 'localhost'
+    }
+
+    test {
+        jvmArgs = [
+                "-Dconfig_server_host=${dockerless_environment_host}",  // necessary for running 'test' while 'build
+                "-Dsolace_host=${dockerless_environment_host}"          // necessary for running 'test' while 'build
+        ]
+    }
+
     dependencyManagement {
         imports {
             // Version of artifact from here is used in ALL SUB-MODULES! don't set version in sub-module build.gradle

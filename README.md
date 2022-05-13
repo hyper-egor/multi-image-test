@@ -12,16 +12,20 @@ multi-module project to explore e2e tests of several dockered modules on spring 
 
 ### Spring cloud config server
 
-Config server is located in the module 'config-server'
-Currently before runing 'it' e2e test it is supposed that config-server container is up.
+Currently proper way to use Config Server is to run it from independent repo: https://github.com/hyper-egor/conf-server
 <br/>
-To start config server:<br/>
+This config server uses file system based YAML filed as a source.
+
+<br/>
+Old, deprecated version of Config server is located in this project, module 'config-server' and could be executed like that:
+<br/>
 <code>
 cd config-server<br/>
 gradle build<br/>
 gradle docker<br/>
 gradle dockerRun
-</code>
+</code><br/>
+Data for this server is sourced from git (see server's application.properties)
 
 ### Install Solace brocker image
 (https://docs.solace.com/Solace-SW-Broker-Set-Up/Docker-Containers/Set-Up-Docker-Container-Windows.htm)
@@ -58,7 +62,7 @@ it's important to enhance test configuration with VM options: <code>-Dconfig_ser
 ### Extras
 Just for hello-world try's: to run manually just one module-a container from terminal in container we can do the following:
 <br/>
-<code>docker run -d -it -p:81:8081 --shm-size=2g --env username_admin_globalaccesslevel=admin --env username_admin_password=admin --name=aaa --link config-server --link solace 76e28ae5afa7
+<code>docker run -d -it -p:81:8081 --shm-size=2g --env username_admin_globalaccesslevel=admin --env username_admin_password=admin --name=aaa --link conf-server --link solace 76e28ae5afa7
 </code>
 <br/>
 in the example above <b>76e28ae5afa7</b> is the docker imange id which is available in the Docker desctop GUI after we run 'gradle docker' in corresponding module.

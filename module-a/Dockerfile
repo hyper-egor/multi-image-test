@@ -7,4 +7,4 @@ EXPOSE 8081
 COPY . .
 RUN find . -depth -name "*SNAPSHOT.jar" -exec sh -c 'f="{}"; mv -- "$f" "app.jar"' \;
 RUN ["ls", "-lh"]
-CMD ["java", "-jar", "-Dconfig_server_host=config-server", "-Dsolace_host=solace", "app.jar"]
+CMD ["java", "-jar", "-Dconfig_server_host=conf-server", "-Dsolace_host=solace", "app.jar"]

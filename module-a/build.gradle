@@ -23,20 +23,11 @@ dockerRun {
     ports '81:8081'
     // 'true' to remove container after stop
     clean true
+
+    // ATTENTION: ''conf-server' and 'solace' must be UP before starting this container. otherwise we'll get err code 125
+    arguments '--link', 'conf-server', '--link', 'solace'
 }
 
-
-ext {
-    // Define here the vars to use globally in placeholders of this script
-    dockerless_environment_host = 'localhost'
-}
-
-test {
-    jvmArgs = [
-            "-Dconfig_server_host=${dockerless_environment_host}",  // config server host to work without Docker (build, junit tests etc.)
-            "-Dsolace_host=${dockerless_environment_host}"          // SOLACE host to work without Docker (build, junit tests etc.)
-    ]
-}
 
 dependencies {
     // below declares that this 'module'a' depends on 'configuration' module
