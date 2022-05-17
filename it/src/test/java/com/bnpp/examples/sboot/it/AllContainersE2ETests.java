@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 
+import static com.bnpp.examples.sboot.utils.FileUtils.getDockerFilePath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -136,9 +137,7 @@ public class AllContainersE2ETests {
             solaceHostIP = solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress();
         }
 
-        // TODO: below Dockerfile path resolving works only for tests run via IDE's 'play'. Fix for console's 'build's
-        Path parentProjectPath = Path.of("").toAbsolutePath();
-        Path moduleADockerfilePath = parentProjectPath.resolve("module-a").resolve("Dockerfile");
+        Path moduleADockerfilePath = getDockerFilePath("module-a");
 
         log.info("====== Dockerfile: " + moduleADockerfilePath);
 

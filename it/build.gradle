@@ -2,12 +2,4 @@ dependencies {
     implementation project(':common')
     implementation project(':module-a')
     implementation project(':module-b')
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.testcontainers:testcontainers:1.17.1'
-    implementation 'org.testcontainers:junit-jupiter:1.17.1'
-
-    // enable Spring cloud config as config source
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '3.1.1'
 }

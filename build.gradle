@@ -23,6 +23,7 @@ subprojects {
     }
 
     ext {
+        active_profile = 'local'
         // Define here the vars to use globally in placeholders of this script
         dockerless_environment_host = 'localhost'
     }

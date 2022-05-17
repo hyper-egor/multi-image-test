@@ -30,16 +30,7 @@ dockerRun {
 
 
 dependencies {
-    // below declares that this 'module'a' depends on 'configuration' module
     implementation project(':common')
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-
-    implementation group: 'com.solace.spring.boot', name: 'solace-jms-spring-boot-starter', version: '4.2.2'
-
-    // enable Spring cloud config as config source
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '3.1.1'
 }
 
 tasks.named('test') {
