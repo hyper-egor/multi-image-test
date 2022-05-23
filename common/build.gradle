@@ -2,7 +2,7 @@ plugins {
     // 'apply false' - to tell Spring not to make executeble JAR
     id 'org.springframework.boot' version '2.6.6' apply false
 
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'io.spring.dependency-management' //version '1.0.11.RELEASE'
 }
 
 dependencies {

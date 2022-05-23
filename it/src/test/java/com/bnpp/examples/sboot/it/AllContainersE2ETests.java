@@ -131,7 +131,7 @@ public class AllContainersE2ETests {
     public void testCrossModuleTransmition() throws Exception {
         log.info("====== Module-A server port: " + moduleAServerPort);
 
-        if (solaceHostIP == null) {
+        if (solaceHostIP == null || "".equals(solaceHostIP)) {
             // Solace container is not up yet.
             GenericContainer solaceContainer = runSolaceContainer();
             solaceHostIP = solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress();
