@@ -29,12 +29,16 @@ class ModuleATestPack {
     @Test
     void contextLoads() throws Exception {
 
+
         long randomedTaskId = (long)(Math.random() * Long.MAX_VALUE);
 
         assertThat( httpController ).isNotNull();
         String reply = this.restTemplate.getForObject("http://localhost:" + port + "/execute?taskId=" + randomedTaskId, String.class);
         log.info("Service reply: [" + reply + "]");
         assertThat(reply).contains( HTTPController.TASK_ACCEPTED_OK_SIGN );
+
+
+
     }
 
 }

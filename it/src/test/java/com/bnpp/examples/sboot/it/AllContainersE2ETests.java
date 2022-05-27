@@ -3,6 +3,7 @@ package com.bnpp.examples.sboot.it;
 import com.bnpp.examples.sboot.HTTPController;
 import com.bnpp.examples.sboot.utils.DockerUtils;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
@@ -13,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -22,6 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 import static com.bnpp.examples.sboot.utils.FileUtils.getDockerFilePath;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,17 +62,27 @@ public class AllContainersE2ETests {
 
     public static final String SOLACE_DOCKER_HOST = "solace";
     public static String solaceHostIP;
+    @ClassRule
+    public static Network network= Network.newNetwork();
 
+/*
     @ClassRule
     public static final ExternalResource resource = new ExternalResource() {
         @Override
         protected void before() throws Throwable {
-            configServerHostIP = DockerUtils.getContainerIP(CONFIG_SERVER_DOCKER_HOST);
-            log.info("========= IP for " + CONFIG_SERVER_DOCKER_HOST + " is " + configServerHostIP);
 
-            // Try recv solace IP : for cases when we pre-run Solace and create it's queues manually
-            solaceHostIP = DockerUtils.getContainerIP(SOLACE_DOCKER_HOST);
-            log.info("========= IP for " + SOLACE_DOCKER_HOST + " is " + solaceHostIP);
+            GenericContainer configContainer =  new GenericContainer(CONFIG_SERVER_DOCKER_HOST)
+                    .withNetwork(AllContainersE2ETests.network)
+                    .withExposedPorts(8888)
+                    .withNetworkAliases(CONFIG_SERVER_DOCKER_HOST)
+                    .withFileSystemBind("/home/pavel/IdeaProjects/example-configs","/config-storage", BindMode.READ_WRITE)
+                    .waitingFor(
+                            Wait.forLogMessage(".*Started ConfigServerApplication.*", 1).
+                                    withStartupTimeout(Duration.ofMinutes(2))
+                    );
+
+            configContainer.start();
+
         }
 
         @Override
@@ -76,18 +90,22 @@ public class AllContainersE2ETests {
             // nope
         }
     };
+*/
 
     /**
      *
      */
+
+
     private GenericContainer runSolaceContainer() throws Exception {
         log.info("Starting solace...");
         GenericContainer solaceContainer =
                 new GenericContainer(SOLACE_IMAGE)
-                        .withExposedPorts(SOLACE_HTTP_PORT_INSIDE_DOCKER, 55555, 8008)
+                    //    .withExposedPorts(SOLACE_HTTP_PORT_INSIDE_DOCKER, 55555, 8008)
                         .withEnv("username_admin_globalaccesslevel", SOLACE_HTTP_USER)
                         .withEnv("username_admin_password", SOLACE_HTTP_PASS)
                         .withNetworkAliases(SOLACE_DOCKER_HOST)
+                        .withNetwork(network)
                         .withSharedMemorySize(2_000_000_000L) // min 1Gb needed
                         .waitingFor(
                                 Wait.forLogMessage(".*Running pre-startup checks:.*", 1).
@@ -134,8 +152,10 @@ public class AllContainersE2ETests {
         if (solaceHostIP == null || "".equals(solaceHostIP)) {
             // Solace container is not up yet.
             GenericContainer solaceContainer = runSolaceContainer();
-            solaceHostIP = solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress();
+
         }
+
+
 
         Path moduleADockerfilePath = getDockerFilePath("module-a");
 
@@ -146,8 +166,7 @@ public class AllContainersE2ETests {
         GenericContainer moduleAContainer = new GenericContainer(new ImageFromDockerfile()
                 .withDockerfile(moduleADockerfilePath))
                 .withExposedPorts(moduleAServerPort)
-                .withExtraHost(CONFIG_SERVER_DOCKER_HOST, configServerHostIP)
-                .withExtraHost(SOLACE_DOCKER_HOST, solaceHostIP)
+                .withNetwork(network)
                 .waitingFor(Wait.forListeningPort());   // tell's Testcontainers to wait with tests before the container starts to reply with excpected strategy
 
         log.info("============= 1 " + moduleAContainer.getLogs());

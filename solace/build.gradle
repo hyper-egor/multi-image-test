@@ -1,0 +1,19 @@
+plugins {
+
+    id 'idea'
+
+    // to pack the image using 'docker'
+    id "com.palantir.docker" version "0.32.0"
+
+    // to run the image using 'dockerRun'
+    id "com.palantir.docker-run" version "0.32.0"
+}
+
+
+// also 'gradle dockerStop' task is available!
+dockerRun {
+    name "${project.name}"
+    image "solace/solace-pubsub-standard"
+    clean true
+    arguments '--network','mynet','--shm-size','2g','--env', 'username_admin_globalaccesslevel=admin', '--env' , 'username_admin_password=admin'
+}

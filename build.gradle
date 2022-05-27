@@ -30,8 +30,8 @@ subprojects {
 
     test {
         jvmArgs = [
-                "-Dconfig_server_host=${dockerless_environment_host}",  // necessary for running 'test' while 'build
-                "-Dsolace_host=${dockerless_environment_host}"          // necessary for running 'test' while 'build
+                "-Dconfig_server_host=conf-server",  // necessary for running 'test' while 'build
+                "-Dsolace_host=solace"          // necessary for running 'test' while 'build
         ]
     }
 

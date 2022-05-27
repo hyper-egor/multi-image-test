@@ -4,3 +4,6 @@ include 'common'
 include 'module-a'
 include 'module-b'
 include 'it'
+include 'gradle'
+include 'solace'
+

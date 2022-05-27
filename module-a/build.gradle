@@ -9,10 +9,13 @@ plugins {
 }
 
 docker {
-    dependsOn build
+    /*dependsOn build
     name "${project.name}:${project.version}"
     files bootJar.archivePath
-    buildArgs([JAR_FILE: "${bootJar.archiveName}"])
+    buildArgs([JAR_FILE: "${bootJar.archiveName}"])*/
+
+    name "${project.name}"
+    dockerfile file('Dockerfile')
 }
 
 // also 'gradle dockerStop' task is available
@@ -20,12 +23,12 @@ dockerRun {
     name "${project.name}"
     image "${project.name}:${project.version}"
     // port <port available outside> : <port of app in the container>
-    ports '81:8081'
+    //ports '81:8081'
     // 'true' to remove container after stop
     clean true
 
     // ATTENTION: ''conf-server' and 'solace' must be UP before starting this container. otherwise we'll get err code 125
-    arguments '--link', 'conf-server', '--link', 'solace'
+    arguments '--network', 'mynet', '--hostname', 'module-a'
 }
 
 
@@ -34,6 +37,8 @@ dependencies {
 }
 
 tasks.named('test') {
+    //jvmArgs '--enable-preview'
+    //jvmArgs '--stacktrace'
     useJUnitPlatform()
 }
 
