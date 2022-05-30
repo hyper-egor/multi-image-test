@@ -9,11 +9,17 @@ plugins {
     id "com.palantir.docker-run" version "0.32.0"
 }
 
+docker {
+
+    name "${project.name}"
+    dockerfile file('Dockerfile')
+
+}
 
 // also 'gradle dockerStop' task is available!
 dockerRun {
     name "${project.name}"
-    image "solace/solace-pubsub-standard"
+    image "${project.name}"
     clean true
     arguments '--network','mynet','--shm-size','2g','--env', 'username_admin_globalaccesslevel=admin', '--env' , 'username_admin_password=admin'
 }

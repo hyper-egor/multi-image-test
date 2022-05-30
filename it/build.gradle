@@ -3,3 +3,10 @@ dependencies {
     implementation project(':module-a')
     implementation project(':module-b')
 }
+
+test {
+    jvmArgs '--enable-preview'
+    useJUnitPlatform()
+
+}
+

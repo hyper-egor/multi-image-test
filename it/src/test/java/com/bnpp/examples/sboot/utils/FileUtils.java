@@ -2,6 +2,8 @@ package com.bnpp.examples.sboot.utils;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class FileUtils {
 
@@ -11,7 +13,7 @@ public class FileUtils {
      */
     public static Path getDockerFilePath(String dockeredModuleSubModuleName)
     {
-        Path parentProjectPath = Path.of("").toAbsolutePath();
+        Path parentProjectPath = Paths.get("").toAbsolutePath();
         Path moduleProjectPath = parentProjectPath.resolve(dockeredModuleSubModuleName);
         File file = new File(moduleProjectPath.toString());
         if (!file.exists())

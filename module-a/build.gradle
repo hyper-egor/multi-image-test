@@ -8,11 +8,15 @@ plugins {
     id "com.palantir.docker-run" version "0.32.0"
 }
 
+dockerPrepare {
+    dependsOn bootJar
+}
 docker {
-    /*dependsOn build
-    name "${project.name}:${project.version}"
-    files bootJar.archivePath
-    buildArgs([JAR_FILE: "${bootJar.archiveName}"])*/
+    dependsOn build
+
+    //name "${project.name}:${project.version}"
+    files "build/libs/${project.name}-${project.version}.jar"
+    buildArgs([JAR_FILE: "${project.name}-${project.version}.jar"])
 
     name "${project.name}"
     dockerfile file('Dockerfile')
@@ -30,7 +34,11 @@ dockerRun {
     // ATTENTION: ''conf-server' and 'solace' must be UP before starting this container. otherwise we'll get err code 125
     arguments '--network', 'mynet', '--hostname', 'module-a'
 }
-
+tasks.withType(JavaCompile) {
+    configure(options) {
+        options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked' // examples
+    }
+}
 
 dependencies {
     implementation project(':common')

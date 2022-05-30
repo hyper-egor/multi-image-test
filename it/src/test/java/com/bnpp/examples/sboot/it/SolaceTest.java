@@ -1,13 +1,12 @@
-package com.bnpp.examples.sboot;
+package com.bnpp.examples.sboot.it;
 
 import com.bnpp.examples.common.DockerContainerDependent;
 import com.bnpp.examples.common.annotations.DependOnDockerContainer;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
@@ -17,12 +16,11 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner/*SpringRunner*/.class)
-@SpringBootTest
-@DependOnDockerContainer(containerName = "solace")
+@DependOnDockerContainer(containerName = {"solace"})
 public class SolaceTest extends DockerContainerDependent {
     private static final Logger log = LoggerFactory.getLogger(SolaceTest.class);
 
-    @Value("${solace.jms.msgVpn}")
+/*    @Value("${solace.jms.msgVpn}")
     public String SOLACE_VPN_NAME;
 
     @Value("${solace.queueName}")
@@ -34,7 +32,7 @@ public class SolaceTest extends DockerContainerDependent {
     @Value("${solace.http.user}")
     public String SOLACE_HTTP_USER;
     @Value("${solace.http.pass}")
-    public String SOLACE_HTTP_PASS;
+    public String SOLACE_HTTP_PASS;*/
 
     @Test
     public void testSolaceContainerIsUp() throws Exception {
@@ -54,8 +52,9 @@ public class SolaceTest extends DockerContainerDependent {
     }
 
     private ResponseEntity<String> httpPostSolace(String request) {
-        String url = "http://"+solaceContainer.getHost()+":" + SOLACE_HTTP_PORT
-                + "/SEMP/v2/config/msgVpns/" + SOLACE_VPN_NAME + "/queues";
+
+        String url = "http://"+getIp(getSolaceContainer())+":"+getSolaceContainer().getExposedPorts().get(0)
+                + "/SEMP/v2/config/msgVpns/A2Bqueue/queues";
         log.info("Constructed Solace create queue HTTP POST URL: " + url);
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
