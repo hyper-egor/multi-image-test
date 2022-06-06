@@ -8,10 +8,8 @@ jobs:
         uses: actions/checkout@master
         with:
               repository:  hyper-egor /example-configs 
-      
       - name: echo checkout 
         run: ls
-        
       - name: Check out repository code
         uses: actions/checkout@master
         with:
