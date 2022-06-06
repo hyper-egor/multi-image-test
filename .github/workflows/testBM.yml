@@ -10,3 +10,9 @@ jobs:
              repository: hyper-egor/conf-server
       - name: echo checkout 
         run: ls
+      - name: build conf-server
+        run: ./gradlew build
+      - name: run conf-server container
+        run: docker gradle dockerRun 
+      #- name: run solace container
+        #run: 
