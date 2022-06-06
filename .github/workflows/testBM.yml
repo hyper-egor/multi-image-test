@@ -7,6 +7,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@master
         with:
-             name: hyper-egor/conf-server
+             repository: hyper-egor/conf-server
       - name: echo checkout 
         run: ls
