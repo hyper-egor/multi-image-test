@@ -5,9 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check ou config 
-        uses: actions/checkout@main
+        uses: actions/checkout@master
         with:
-              repository:  hyper-egor /example-configs 
+              repository:  hyper-egor/example-configs 
       - name: echo checkout 
         run: ls
       - name: Check out repository code
