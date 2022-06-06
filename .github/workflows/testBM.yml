@@ -8,14 +8,17 @@ jobs:
         uses: actions/checkout@master
         with:
               repository:  hyper-egor/example-configs 
+              path: configs
+              
       - name: echo checkout 
-        run: ls
+        run: ls&&pwd
       - name: Check out repository code
         uses: actions/checkout@master
         with:
              repository: hyper-egor/conf-server
+             path: conf-server
       - name: echo checkout 
-        run: ls
+        run: ls&&pwd
       - name: build conf-server
         run: gradle build
       - name: run conf-server container
