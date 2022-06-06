@@ -10,9 +10,3 @@ jobs:
              name: hyper-egor/conf-server
       - name: echo checkout 
         run: ls
-      - name: Prepare docker
-        uses: docker/setup-buildx-action@v1
-      - name: echo_pwd
-        run: pwd
-      - name: echo_ls
-        run: ls
