@@ -24,3 +24,10 @@ jobs:
         run: gradle docker -p ./conf-server
       - name: run conf-server container
         run: gradle dockerRun -p ./conf-server
+        #TODO run solcale container
+      - name: build main project
+        run: gradle build
+      - name: run IT
+        run: gradle build -Dconfig_server_host=localhost -p ./it
+        
+        
