@@ -20,7 +20,7 @@ jobs:
         run: ls&&pwd&&ls ./conf-server
       - name: build conf-server
         run: gradle build -p ./conf-server
+      - name: build conf-server container
+        run: gradle docker -p ./conf-server
       - name: run conf-server container
-        run: docker gradle dockerRun 
-      #- name: run solace container
-        #run: 
+        run: gradle dockerRun -p ./conf-server
