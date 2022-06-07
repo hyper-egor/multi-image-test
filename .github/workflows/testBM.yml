@@ -4,23 +4,22 @@ jobs:
   test-in-docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Check ou config 
-        uses: actions/checkout@master
-        with:
-              repository:  hyper-egor/example-configs 
-              path: configs
-              
-      - name: echo checkout 
-        run: ls&&pwd
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Check out multi image  code
         uses: actions/checkout@master
         with:
              repository: hyper-egor/conf-server
-             #path: conf-server
+             path: conf-server
+      - name: Check out config file
+        uses: actions/checkout@master
+        with:
+              repository:  hyper-egor/example-configs 
+              path: conf-server/configs
       - name: echo checkout 
-        run: ls&&pwd
+        run: ls&&pwd&&ls ./conf-server
       - name: build conf-server
-        run: gradle build
+        run: gradle build -p ./conf-server
       - name: run conf-server container
         run: docker gradle dockerRun 
       #- name: run solace container
