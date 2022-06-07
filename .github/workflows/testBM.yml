@@ -12,11 +12,11 @@ jobs:
               
       - name: echo checkout 
         run: ls&&pwd
-      - name: Check out repository code
+      - name: Check out multi image  code
         uses: actions/checkout@master
         with:
              repository: hyper-egor/conf-server
-             path: conf-server
+             #path: conf-server
       - name: echo checkout 
         run: ls&&pwd
       - name: build conf-server
