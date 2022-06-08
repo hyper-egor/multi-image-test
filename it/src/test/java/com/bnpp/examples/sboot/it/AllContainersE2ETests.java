@@ -2,6 +2,8 @@ package com.bnpp.examples.sboot.it;
 
 import com.bnpp.examples.sboot.HTTPController;
 import com.bnpp.examples.sboot.utils.DockerUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -25,6 +27,7 @@ import java.util.Collections;
 
 import static com.bnpp.examples.sboot.utils.FileUtils.getDockerFilePath;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /* below annotation is to enable read properties */
@@ -59,6 +62,10 @@ public class AllContainersE2ETests {
     public static final String SOLACE_DOCKER_HOST = "solace";
     public static String solaceHostIP;
 
+    private long RANDOM_TASK_ID;
+    private GenericContainer moduleAContainer;
+    private String address;
+
     @ClassRule
     public static final ExternalResource resource = new ExternalResource() {
         @Override
@@ -76,6 +83,41 @@ public class AllContainersE2ETests {
             // nope
         }
     };
+
+    @Before
+    public void beforeTest() throws Exception {
+        checkSolace();
+        RANDOM_TASK_ID = (long) (Math.random() * Long.MAX_VALUE);
+        moduleAContainer = runModuleAContainer();
+        log.info("====== Module-A server port: " + moduleAServerPort);
+        address = "http://"
+                + moduleAContainer.getHost()
+                + ":" + moduleAContainer.getMappedPort(moduleAServerPort) + "/execute?taskId=" + RANDOM_TASK_ID;
+    }
+
+    @After
+    public void afterTest() {
+        moduleAContainer.stop();
+    }
+
+    @Test
+    public void testCrossModuleTransmition() {
+        log.info("Constructed Module-a container URL: " + address);
+        RestTemplate restTemplate = new RestTemplate();
+        String reply = restTemplate.getForObject(address, String.class);
+        log.info("Container reply: [" + reply + "]");
+        log.info(reply);
+        assertThat(reply).contains(HTTPController.TASK_ACCEPTED_OK_SIGN);
+    }
+
+    @Test
+    public void testCrossModuleTransmitionNoError() {
+        log.info("Constructed Module-a container URL: " + address);
+        RestTemplate restTemplate = new RestTemplate();
+        String reply = restTemplate.getForObject(address, String.class);
+        log.info("Container reply: [" + reply + "]");
+        assertFalse(reply.contains("Error"));
+    }
 
     /**
      *
@@ -127,29 +169,23 @@ public class AllContainersE2ETests {
         return solaceContainer;
     }
 
-    @Test
-    public void testCrossModuleTransmition() throws Exception {
-        log.info("====== Module-A server port: " + moduleAServerPort);
-
+    private void checkSolace() throws Exception {
         if (solaceHostIP == null) {
             // Solace container is not up yet.
             GenericContainer solaceContainer = runSolaceContainer();
             solaceHostIP = solaceContainer.getContainerInfo().getNetworkSettings().getIpAddress();
         }
+    }
 
+    private GenericContainer runModuleAContainer() {
         Path moduleADockerfilePath = getDockerFilePath("module-a");
-
         log.info("====== Dockerfile: " + moduleADockerfilePath);
-
-        long RANDOM_TASK_ID = (long) (Math.random() * Long.MAX_VALUE);
-
         GenericContainer moduleAContainer = new GenericContainer(new ImageFromDockerfile()
                 .withDockerfile(moduleADockerfilePath))
                 .withExposedPorts(moduleAServerPort)
                 .withExtraHost(CONFIG_SERVER_DOCKER_HOST, configServerHostIP)
                 .withExtraHost(SOLACE_DOCKER_HOST, solaceHostIP)
                 .waitingFor(Wait.forListeningPort());   // tell's Testcontainers to wait with tests before the container starts to reply with excpected strategy
-
         log.info("============= 1 " + moduleAContainer.getLogs());
         try {
             moduleAContainer.start();
@@ -161,17 +197,6 @@ public class AllContainersE2ETests {
 
         assertTrue(moduleAContainer.isRunning());
 
-        String address = "http://"
-                + moduleAContainer.getHost()
-                + ":" + moduleAContainer.getMappedPort(moduleAServerPort) + "/execute?taskId=" + RANDOM_TASK_ID;
-
-        log.info("Constructed Module-a container URL: " + address);
-
-        RestTemplate restTemplate = new RestTemplate();
-        String reply = restTemplate.getForObject(address, String.class);
-        log.info("Container reply: [" + reply + "]");
-        assertThat(reply).contains(HTTPController.TASK_ACCEPTED_OK_SIGN);
-
-        moduleAContainer.stop();
+        return moduleAContainer;
     }
 }
