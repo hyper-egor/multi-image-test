@@ -27,8 +27,12 @@ jobs:
         run: pwd&&ls ./solaceLabs
       - name: run solace
         run: docker run -d -p 8080:8080 -p 55555:55555 -p:8008:8008 --shm-size=2g --env username_admin_globalaccesslevel=admin --env username_admin_password=admin --name=solace solace/solace-pubsub-standard
-      - name: createQueue
-        run: curl --user "admin:admin" --header "Content-Type: application/json" --request POST -d '{"queueName":"A2Bqueue","accessType":"non-exclusive","egressEnabled":true,"ingressEnabled":true,"permission":"consume"}' http://localhost:8080/SEMP/v2/config/msgVpns/default/queues  
+      - name: curl
+        uses: wei/curl@v1
+        with:
+              args: --user "admin:admin" --header "Content-Type: application/json" --request POST -d '{"queueName":"A2Bqueue","accessType":"non-exclusive","egressEnabled":true,"ingressEnabled":true,"permission":"consume"}' http://localhost:8080/SEMP/v2/config/msgVpns/default/queues  
+#      - name: createQueue
+#        run: curl --user "admin:admin" --header "Content-Type: application/json" --request POST -d '{"queueName":"A2Bqueue","accessType":"non-exclusive","egressEnabled":true,"ingressEnabled":true,"permission":"consume"}' http://localhost:8080/SEMP/v2/config/msgVpns/default/queues  
       - name: build conf-server
         run: gradle build -p ./conf-server
       - name: build conf-server container
