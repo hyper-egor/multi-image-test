@@ -23,16 +23,17 @@ jobs:
               path: solcaeLabs
       - name: build solace 
         run: cd ./solcaeLabs/template&&docker-compose -f PubSubStandard_singleNode.yml up -d
-      - name: echo checkout 
+      - name: docker ps
         run: docker ps
       #- name: run solace
       #  run: docker run -d -p 8080:8080 -p 55555:55555 -p:8008:8008 --shm-size=2g --env username_admin_globalaccesslevel=admin --env username_admin_password=admin --name=solace solace/solace-pubsub-standard
-      - name: temp sleep 30
-        uses: jakejarvis/wait-action@master
-        with:
-              time: '30s'
-              uses: nev7n/wait_for_response@v1
+     # - name: temp sleep 30
+     #   uses: jakejarvis/wait-action@master
+     #   with:
+     #         time: '30s'
+     #         
       - name: wait for solace
+        uses: nev7n/wait_for_response@v1
         with:
               url: 'http://localhost:8080/'
               responseCode: 200
