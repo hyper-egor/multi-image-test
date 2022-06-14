@@ -16,6 +16,13 @@ jobs:
         with:
               repository:  hyper-egor/example-configs 
               path: conf-server/configs
+      - name: Check out solace
+        uses: actions/checkout@master
+        with:
+              repository:   SolaceLabs/solace-single-docker-compose  
+              path: solcaeLabs
+      - name: build solace 
+        run: cd ./solcaeLabs/template&&docker-compose -f PubSubStandard_singleNode.yml up -d
       - name: echo checkout 
         run: ls&&pwd&&ls ./conf-server
       - name: build conf-server
