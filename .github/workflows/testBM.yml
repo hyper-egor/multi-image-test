@@ -28,7 +28,7 @@ jobs:
       - name: build main project
         run: gradle build
       - name: run IT
-        run: gradle build -Dconfig_server_host=localhost -p ./it --debug
+        run: gradle build -Dconfig_server_host=localhost  --stacktrace -p ./it 
         
         
         
