@@ -23,7 +23,10 @@ jobs:
      - name: check queue
        uses: fjogeleit/http-request-action@v1
        with:
-             url: 'http://localhost:8080/SEMP/v2/config/'
+             url: 'http://localhost:8080/SEMP/v2/config/msgVpns/default/queues'
              method: 'GET'
              username: 'admin'
              password: 'admin'
+     - name: Show Response
+       run: |
+             echo ${{ steps.myRequest.outputs.response }}
