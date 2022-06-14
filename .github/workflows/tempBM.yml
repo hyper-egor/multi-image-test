@@ -21,10 +21,10 @@ jobs:
              timeout: 30000 #ms
              interval: 1000
      - name: check queue
+       id: myRequest
        uses: fjogeleit/http-request-action@v1
        with:
              url: 'http://localhost:8080/SEMP/v2/config/'
-             id: myRequest
              method: 'GET'
              username: 'admin'
              password: 'admin'
