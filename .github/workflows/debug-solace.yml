@@ -1,0 +1,23 @@
+name: debug solace
+on: [ push ]
+jobs:
+  debug-solace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out solace
+        uses: actions/checkout@master
+        with:
+              repository:   SolaceLabs/solace-single-docker-compose  
+              path: solcaeLabs
+      - name: build solace 
+        run: cd ./solcaeLabs/template&&docker-compose -f PubSubStandard_singleNode.yml up -d
+      - name: docker ps
+        run: docker ps
+        - name: check queue
+        uses: fjogeleit/http-request-action@v1
+        with:
+              url:http://localhost:8080/SEMP/v2/config/
+              #url: 'http://localhost:8080/SEMP/v2/config/msgVpns/default/queues'
+              method: 'GET'
+              username: 'admin'
+              password: 'admin'
