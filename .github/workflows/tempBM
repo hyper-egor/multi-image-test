@@ -1,7 +1,7 @@
-name: Test branch in docker
+name: debug solace
 on: [ push ]
 jobs:
-  test-in-docker:
+  debug-solace:
     runs-on: ubuntu-latest
     steps:
       - name: Check out solace
