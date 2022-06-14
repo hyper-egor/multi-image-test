@@ -13,6 +13,13 @@ jobs:
        run: cd ./solcaeLabs/template&&docker-compose -f PubSubStandard_singleNode.yml up -d
      - name: docker ps
        run: docker ps
+     - name: wait for solace
+       uses: nev7n/wait_for_response@v1
+       with:
+             url: 'http://localhost:8080/'
+             responseCode: 200
+             timeout: 30000 #ms
+             interval: 1000
      - name: check queue
        uses: fjogeleit/http-request-action@v1
        with:
