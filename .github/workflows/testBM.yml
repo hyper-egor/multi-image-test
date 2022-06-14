@@ -31,6 +31,13 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
               time: '30s'
+              uses: nev7n/wait_for_response@v1
+      - name: wait for solace
+        with:
+              url: 'http://localhost:8080/'
+              responseCode: 200
+              timeout: 2000
+              interval: 500
       - name: create queue
         uses: fjogeleit/http-request-action@v1
         with:
