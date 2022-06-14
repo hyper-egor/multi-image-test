@@ -25,8 +25,8 @@ jobs:
         run: cd ./solcaeLabs/template&&docker-compose -f PubSubStandard_singleNode.yml up -d
       - name: echo checkout 
         run: docker ps
-      - name: run solace
-        run: docker run -d -p 8080:8080 -p 55555:55555 -p:8008:8008 --shm-size=2g --env username_admin_globalaccesslevel=admin --env username_admin_password=admin --name=solace solace/solace-pubsub-standard
+      #- name: run solace
+      #  run: docker run -d -p 8080:8080 -p 55555:55555 -p:8008:8008 --shm-size=2g --env username_admin_globalaccesslevel=admin --env username_admin_password=admin --name=solace solace/solace-pubsub-standard
       - name: create queue
         uses: fjogeleit/http-request-action@v1
         with:
