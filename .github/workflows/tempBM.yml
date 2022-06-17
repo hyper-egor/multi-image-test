@@ -2,7 +2,7 @@ name: debugSolace
 on: [ push ]
 jobs:
   debug-solace:
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-22.04
    steps:
      - name: Check out solace
        uses: actions/checkout@master
